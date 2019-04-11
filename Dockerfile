@@ -1,7 +1,7 @@
 FROM debian:stretch-slim
 MAINTAINER daisukekobayashi <daisuke@daisukekobayashi.com>
 
-ENV DEBIAN_FRONTEND noninteractivea
+ENV DEBIAN_FRONTEND noninteractive
 
 ARG username=daisuke
 ENV USER $username
