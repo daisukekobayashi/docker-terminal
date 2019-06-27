@@ -40,7 +40,7 @@ RUN apt-get update \
             make cmake build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
             llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev \
             autoconf bison libyaml-dev libgdbm-dev ssh zip unzip rar unrar gawk \
-            jq silversearcher-ag rsync cron w3m-img connect-proxy \
+            jq silversearcher-ag rsync cron w3m-img tree ctags connect-proxy tcptraceroute \
       && rm -rf /var/lib/apt/lists/*
 
 RUN TEMP_DEB="$(mktemp)" \
@@ -66,6 +66,14 @@ RUN wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb \
       && apt-get update \
       && apt-get install --no-install-recommends --no-install-suggests -y esl-erlang elixir \
       && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+      && apt-get install --no-install-recommends --no-install-suggests -y lsb-release \
+      && export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" \
+      && echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" \
+          | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+      && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
+      && apt-get update -y && apt-get install google-cloud-sdk -y
 
 SHELL ["/bin/zsh", "-c"]
 
