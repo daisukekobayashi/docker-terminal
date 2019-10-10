@@ -25,10 +25,6 @@ ENV LANG en_US.utf8
 RUN apt-get update \
       && apt-get install --no-install-recommends --no-install-suggests -y gnupg1 apt-transport-https ca-certificates \
       && \
-      NEOVIM_GPGKEY=9DBB0BE9366964F134855E2255F96FCF8231B6DD; \
-      apt-key  adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys $NEOVIM_GPGKEY \
-      && echo "deb http://ppa.launchpad.net/neovim-ppa/stable/ubuntu xenial main" >> /etc/apt/sources.list.d/neovim-stable.list \
-      && \
       GOLANG_GPGKEY=52B59B1571A79DBC054901C0F6BC817356A3D45E; \
       apt-key  adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys $GOLANG_GPGKEY \
       && echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu xenial main" >> /etc/apt/sources.list.d/golang.list
@@ -36,7 +32,7 @@ RUN apt-get update \
 
 RUN apt-get update \
       && apt-get install --no-install-recommends --no-install-suggests -y xz-utils ca-certificates \
-            zsh git curl wget vim-nox neovim golang-go clang-format clang-tidy \
+            zsh git curl wget vim-nox golang-go clang-format clang-tidy \
             make cmake build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
             llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev \
             autoconf bison libyaml-dev libgdbm-dev ssh zip unzip rar unrar gawk \
@@ -49,6 +45,16 @@ RUN TEMP_DEB="$(mktemp)" \
           | wget -O "$TEMP_DEB" -qi - \
       && dpkg -i "$TEMP_DEB" \
       && rm -f "$TEMP_DEB"
+
+RUN apt-get update \
+      && apt-get install --no-install-recommends --no-install-suggests -y \
+            ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip \
+      && rm -rf /var/lib/apt/lists/* \
+      && git clone https://github.com/neovim/neovim \
+      && cd neovim \
+      && git checkout stable \
+      && make CMAKE_BUILD_TYPE=Release && make install \
+      && cd .. && rm -rf neovim
 
 RUN apt-get update \
       && apt-get install --no-install-recommends --no-install-suggests -y automake xsel libevent-dev xdg-utils \
